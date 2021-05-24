@@ -77,6 +77,8 @@ class Blockchain {
 
             block.height = currentHeight + 1;
             self.chain.push(block);
+
+            self.validateChain();
             resolve(block);
         });
     }
@@ -115,7 +117,7 @@ class Blockchain {
     submitStar(address, message, signature, star) {
         let self = this;
         return new Promise(async (resolve, reject) => {
-            let timeWindow = 5 * 60 * 1000;
+            let timeWindow = 5 * 60;
             let messageTS = parseInt(message.split(':')[1]);
             let currentTS = parseInt(new Date().getTime().toString().slice(0, -3));
 
@@ -203,7 +205,7 @@ class Blockchain {
                 });
 
             for (var i = 0; i < self.chain.length - 1; i++) {
-                if (arr[i].hash !== arr[i + 1].previousBlockHash) {
+                if (self.chain[i].hash !== self.chain[i + 1].previousBlockHash) {
                     errorLog.push('Mismatched Previous Hash At Height ' + i);
                 }
             }
