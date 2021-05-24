@@ -124,13 +124,13 @@ class Blockchain {
                 return;
             }
 
-            // if (bitcoinMessage.verify(message, address, signature)) {
-            let block = new BlockClass.Block({ owner: address, star: star });
-            let addedBlock = await self._addBlock(block);
-            resolve(addedBlock);
-            // } else {
-            //     reject('Could Not Verify The Signature !');
-            // }
+            if (bitcoinMessage.verify(message, address, signature)) {
+                let block = new BlockClass.Block({ owner: address, star: star });
+                let addedBlock = await self._addBlock(block);
+                resolve(addedBlock);
+            } else {
+                reject('Could Not Verify The Signature !');
+            }
 
         });
     }
@@ -203,7 +203,7 @@ class Blockchain {
                 });
 
             for (var i = 0; i < self.chain.length - 1; i++) {
-                if(arr[i].hash !== arr[i + 1].previousBlockHash){
+                if (arr[i].hash !== arr[i + 1].previousBlockHash) {
                     errorLog.push('Mismatched Previous Hash At Height ' + i);
                 }
             }
