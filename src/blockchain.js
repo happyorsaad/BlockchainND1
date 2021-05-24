@@ -68,14 +68,15 @@ class Blockchain {
             self.height++;
 
             block.time = new Date().getTime().toString().slice(0, -3);
-            block.hash = SHA256(JSON.stringify({ ...block, hash: null })).toString();
-
+            
             if (currentHeight >= 0) {
                 let lastBlock = self.chain[currentHeight];
                 block.previousBlockHash = lastBlock.hash;
             }
 
             block.height = currentHeight + 1;
+            block.hash = SHA256(JSON.stringify({ ...block, hash: null })).toString();
+
             self.chain.push(block);
 
             self.validateChain();
@@ -146,7 +147,7 @@ class Blockchain {
     getBlockByHash(hash) {
         let self = this;
         return new Promise((resolve, reject) => {
-            let block = self.chain.filter(p => p.hash === hash)[0];
+            let block = self.chain.find(p => p.hash === hash);
             if (block) {
                 resolve(block);
             } else {
@@ -163,7 +164,7 @@ class Blockchain {
     getBlockByHeight(height) {
         let self = this;
         return new Promise((resolve, reject) => {
-            let block = self.chain.filter(p => p.height === height)[0];
+            let block = self.chain.find(p => p.height === height);
             if (block) {
                 resolve(block);
             } else {
@@ -200,7 +201,7 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             Promise.allSettled(self.chain.map(b => b.validate()))
                 .then(results => {
-                    let errorMsgs = results.filter(r => r.status === "rejected").map(r => r.value);
+                    let errorMsgs = results.filter(r => r.status === "rejected").map(r => r.reason);
                     errorLog.push(...errorMsgs);
                 });
 
